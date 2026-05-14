@@ -1,8 +1,10 @@
 {
-    "zen": {
-        "description": "Zen Browser - Firefox based browser",
-        "version": "latest",
-        "architectures": ["arm64", "x86_64"],
-        "install_method": "script"
-    }
+  "zen": {
+    "name": "zen",
+    "description": "Zen Browser — Firefox-based privacy browser",
+    "version": "auto",
+    "architectures": ["aarch64", "x86_64"],
+    "install_method": "script",
+    "homepage": "https://zen-browser.app"
+  }
 }
