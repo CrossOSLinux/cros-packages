@@ -1,0 +1,8 @@
+{
+    "zen": {
+        "description": "Zen Browser - Firefox based browser",
+        "version": "latest",
+        "architectures": ["arm64", "x86_64"],
+        "install_method": "script"
+    }
+}
