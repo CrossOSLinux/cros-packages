@@ -1,4 +1,20 @@
 {
+  "android-sdk": {
+    "name": "android-sdk",
+    "description": "Android SDK, NDK, and build tools for Flutter and native Android development",
+    "version": "auto",
+    "architectures": ["aarch64", "x86_64"],
+    "install_method": "script",
+    "homepage": "https://developer.android.com/studio#command-line-tools-only"
+  },
+  "flutter": {
+    "name": "flutter",
+    "description": "Flutter SDK — Google's UI toolkit for building natively compiled applications",
+    "version": "auto",
+    "architectures": ["aarch64", "x86_64"],
+    "install_method": "script",
+    "homepage": "https://flutter.dev"
+  },
   "zen": {
     "name": "zen",
     "description": "Zen Browser — Firefox-based privacy browser",
