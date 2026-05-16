@@ -1,4 +1,12 @@
 {
+  "godot": {
+    "name": "godot",
+    "description": "Godot Engine — free and open source multi-platform 2D and 3D game engine",
+    "version": "auto",
+    "architectures": ["aarch64", "x86_64"],
+    "install_method": "script",
+    "homepage": "https://godotengine.org"
+  },
   "android-sdk": {
     "name": "android-sdk",
     "description": "Android SDK, NDK, and build tools for Flutter and native Android development",

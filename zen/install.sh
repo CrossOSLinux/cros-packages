@@ -158,8 +158,9 @@ for SIZE in 16 32 48 64 128; do
         "$ICON_DIR/zen-browser.png" 2>/dev/null || true
 done
 
-# Refresh icon cache if tool is available
-gtk-update-icon-cache /usr/share/icons/hicolor 2>/dev/null || true
+# Refresh icon cache and rebuild desktop database so fuzzel picks up the entry
+sudo gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
+sudo update-desktop-database /usr/share/applications 2>/dev/null || true
 
 echo ""
 echo "==> Zen Browser $VERSION installed."
