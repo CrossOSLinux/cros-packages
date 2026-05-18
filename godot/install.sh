@@ -2,8 +2,6 @@
 # cros-packages: godot
 # Installs the latest stable Godot Engine binary.
 # Binary is installed to /opt/godot, launcher wrapper at /usr/bin/godot.
-# Official icon is fetched from the Godot source repo and installed
-# into the hicolor icon theme for use with Fuzzel and other launchers.
 set -e
 
 ARCH="${CROS_ARCH:-$(uname -m)}"
@@ -17,9 +15,10 @@ case "$ARCH" in
         ;;
 esac
 
+launcher_path="/home/crossfire/cros-packages/godot/godot.desktop"
 INSTALL_DIR="/opt/godot"
 BIN_PATH="/usr/bin/godot"
-DESKTOP_PATH="/usr/share/applications/godot.desktop"
+DESKTOP_PATH="/usr/share/applications"
 TMP_DIR=$(mktemp -d)
 
 cleanup() { rm -rf "$TMP_DIR"; }
@@ -27,10 +26,8 @@ trap cleanup EXIT
 
 echo "==> Godot Engine installer (arch: $GODOT_ARCH)"
 
-# Dependencies: librsvg provides rsvg-convert for icon rendering
 sudo pacman -S --needed --noconfirm wget curl librsvg
 
-# Fetch latest stable version tag from GitHub API
 echo "==> Checking latest version..."
 VERSION=$(curl -sf https://api.github.com/repos/godotengine/godot/releases/latest \
     | grep '"tag_name"' \
@@ -42,7 +39,6 @@ if [ -z "$VERSION" ]; then
 fi
 echo "==> Latest version: $VERSION"
 
-# Check if already installed and up to date
 if [ -f "$INSTALL_DIR/version" ]; then
     INSTALLED=$(cat "$INSTALL_DIR/version")
     echo "==> Installed version: $INSTALLED"
@@ -54,19 +50,15 @@ if [ -f "$INSTALL_DIR/version" ]; then
     sudo rm -rf "$INSTALL_DIR"
 fi
 
-# Build asset filename and URL
-# GitHub tag is e.g. "4.4.1-stable", release asset uses same format
 ASSET="Godot_v${VERSION}_linux.${GODOT_ARCH}.zip"
 DOWNLOAD_URL="https://github.com/godotengine/godot/releases/download/${VERSION}/${ASSET}"
 
 echo "==> Downloading $ASSET..."
 wget -q --show-progress -O "$TMP_DIR/$ASSET" "$DOWNLOAD_URL"
 
-# Extract — zip contains a single file: Godot_v<version>_linux.<arch>
 echo "==> Installing..."
 unzip -q "$TMP_DIR/$ASSET" -d "$TMP_DIR/godot"
 
-# Find the extracted binary (name varies by version)
 BINARY=$(find "$TMP_DIR/godot" -maxdepth 1 -type f | head -1)
 if [ -z "$BINARY" ]; then
     echo "ERROR: Could not find binary in extracted archive."
@@ -77,19 +69,15 @@ sudo mkdir -p "$INSTALL_DIR"
 sudo cp "$BINARY" "$INSTALL_DIR/godot-bin"
 sudo chmod +x "$INSTALL_DIR/godot-bin"
 
-# Store installed version for future update checks
-echo "$VERSION" | sudo tee "$INSTALL_DIR/version" > /dev/null
+# Store version
+printf '%s\n' "$VERSION" > "$TMP_DIR/version"
+sudo mv -f "$TMP_DIR/version" "$INSTALL_DIR/version"
 
-# Install launcher wrapper at /usr/bin/godot
+# Write launcher using printf — no heredoc, no sudo tee, no pipe
 echo "==> Installing launcher..."
-sudo tee "$BIN_PATH" > /dev/null << 'EOF'
-#!/bin/bash
-exec /opt/godot/godot-bin "$@"
-EOF
-sudo chmod +x "$BIN_PATH"
+sudo cp "$launcher_path" "$DESKTOP_PATH" 
 
-# Fetch and install the official Godot icon
-# Source: https://github.com/godotengine/godot/blob/master/icon.svg
+# Fetch and install icon
 echo "==> Fetching official Godot icon..."
 ICON_SVG="$TMP_DIR/godot.svg"
 wget -q -O "$ICON_SVG" \
@@ -101,29 +89,19 @@ else
     echo "==> Installing icons..."
     for SIZE in 16 32 48 64 128 256; do
         ICON_DIR="/usr/share/icons/hicolor/${SIZE}x${SIZE}/apps"
+        ICON_TMP="$TMP_DIR/godot-${SIZE}.png"
         sudo mkdir -p "$ICON_DIR"
-        rsvg-convert -w "$SIZE" -h "$SIZE" "$ICON_SVG" \
-            | sudo tee "$ICON_DIR/godot.png" > /dev/null
+        rsvg-convert -w "$SIZE" -h "$SIZE" "$ICON_SVG" -o "$ICON_TMP"
+        sudo mv -f "$ICON_TMP" "$ICON_DIR/godot.png"
     done
     sudo gtk-update-icon-cache -f -t /usr/share/icons/hicolor 2>/dev/null || true
 fi
 
-# Install desktop entry
+# Copy desktop entry from package folder
 echo "==> Installing desktop entry..."
-sudo tee "$DESKTOP_PATH" > /dev/null << 'EOF'
-[Desktop Entry]
-Name=Godot Engine
-Comment=Multi-platform 2D and 3D game engine
-Exec=godot
-Icon=godot
-Type=Application
-Categories=Development;IDE;GameDevelopment;
-StartupNotify=true
-Terminal=false
-Keywords=game;engine;development;2D;3D;GDScript;
-EOF
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+sudo cp "$SCRIPT_DIR/godot.desktop" "$DESKTOP_PATH"
 
-# Rebuild desktop database so fuzzel and other launchers pick up the new entry immediately
 sudo update-desktop-database /usr/share/applications 2>/dev/null || true
 
 echo ""
