@@ -1,2 +1,5 @@
 # cros-packages
-The gihub that stores the packages for cros installer.
+
+Cros packages is the repository that stores package install scripts for the Cros isntaller.
+
+All packages are tested for arm64 architecture.
