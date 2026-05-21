@@ -1,8 +1,0 @@
-{
-  "name": "android-sdk",
-  "description": "Android SDK, NDK, and build tools for Flutter and native Android development",
-  "version": "auto",
-  "architectures": ["aarch64", "x86_64"],
-  "install_method": "script",
-  "homepage": "https://developer.android.com/studio#command-line-tools-only"
-}

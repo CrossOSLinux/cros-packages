@@ -1,8 +1,0 @@
-{
-  "name": "flutter",
-  "description": "Flutter SDK — Google's UI toolkit for building natively compiled applications",
-  "version": "auto",
-  "architectures": ["aarch64", "x86_64"],
-  "install_method": "script",
-  "homepage": "https://flutter.dev"
-}

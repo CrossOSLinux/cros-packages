@@ -1,8 +1,0 @@
-{
-  "name": "godot",
-  "description": "Godot Engine — free and open source multi-platform 2D and 3D game engine",
-  "version": "auto",
-  "architectures": ["aarch64", "x86_64"],
-  "install_method": "script",
-  "homepage": "https://godotengine.org"
-}
