@@ -1,0 +1,9 @@
+github-desktop
+dbeaver-ce
+code-server
+obsidian
+zerotier-one
+sccache
+pup
+yad
+wmctrl
