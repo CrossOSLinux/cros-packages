@@ -7,3 +7,5 @@ sccache
 pup
 yad
 wmctrl
+codium
+
